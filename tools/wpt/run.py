@@ -502,6 +502,7 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
         tests_changed, tests_affected = testfiles.affected_testfiles(
             files_changed, manifest_path=kwargs.get("manifest_path"), manifest_update=kwargs["manifest_update"])
         test_list = tests_changed | tests_affected
+        logger.info("Identified %s affected tests" % len(test_list))
         if not test_list:
             logger.info("Quitting because no tests were affected.")
             exit()
