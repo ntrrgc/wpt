@@ -65,9 +65,12 @@ def create_parser():
     return parser
 
 
-def exit(msg):
-    logger.error(msg)
-    sys.exit(1)
+def exit(msg=None):
+    if msg:
+        logger.error(msg)
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
 
 def args_general(kwargs):
@@ -491,14 +494,17 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
 
     affected_revish = kwargs.pop("affected", None)
     if affected_revish is not None:
-        files_changed, _ = testfiles.files_changed(affected_revish, include_uncommitted=True, include_new=True)
-        # TODO: honor --no-manifest-update and other manifest args
-        tests_changed, tests_affected = testfiles.affected_testfiles(files_changed)
+        files_changed, _ = testfiles.files_changed(
+            affected_revish, include_uncommitted=True, include_new=True)
+        # TODO(Hexcles): Perhaps use wptrunner.testloader.ManifestLoader here
+        # so that we can reuse it later in wptrunner instead of loading it
+        # again and remove the manifest-related code from testfiles.
+        tests_changed, tests_affected = testfiles.affected_testfiles(
+            files_changed, manifest_path=kwargs.get("manifest_path"), manifest_update=kwargs["manifest_update"])
         test_list = tests_changed | tests_affected
         if not test_list:
-            # TODO: make something show up in all loggers, and also still write wpt_report.json?
-            logger.info("no affected tests")
-            sys.exit(1)
+            logger.info("Quitting because no tests were affected.")
+            exit()
         test_list = [os.path.relpath(item, wpt_root) for item in test_list]
         kwargs["test_list"] += test_list
 
