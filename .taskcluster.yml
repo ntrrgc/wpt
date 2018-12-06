@@ -99,14 +99,14 @@ tasks:
             $map:
               - name: wpt-${browser.name}-${browser.channel}-stability
                 checkout: FETCH_HEAD
-                diff_range: HEAD^
+                diff_range: FETCH_HEAD^
                 description: >-
                   Verify that all tests affected by a pull request are stable
                   when executed in ${browser.name}.
                 extra_args: '--verify'
               - name: wpt-${browser.name}-${browser.channel}-results
                 checkout: FETCH_HEAD
-                diff_range: HEAD^
+                diff_range: FETCH_HEAD^
                 description: >-
                   Collect results for all tests affected by a pull request in
                   ${browser.name}.
